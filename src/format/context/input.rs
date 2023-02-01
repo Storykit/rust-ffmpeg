@@ -99,6 +99,10 @@ impl Input {
         unsafe { (*self.as_ptr()).probe_score }
     }
 
+    pub fn duration(&self) -> i64 {
+        unsafe { (*self.as_ptr()).duration }
+    }
+
     pub fn packets(&mut self) -> PacketIter {
         PacketIter::new(self)
     }
