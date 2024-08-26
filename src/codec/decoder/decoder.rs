@@ -54,7 +54,7 @@ impl Decoder {
     }
 
     pub fn video(self) -> Result<Video, Error> {
-        if let Some(codec) = self.0.codec() {
+        if let Some(codec) = self.codec() {
             self.open_as(codec).and_then(|o| o.video())
         } else if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.video())
@@ -64,7 +64,9 @@ impl Decoder {
     }
 
     pub fn audio(self) -> Result<Audio, Error> {
-        if let Some(codec) = super::find(self.id()) {
+        if let Some(codec) = self.codec() {
+            self.open_as(codec).and_then(|o| o.audio())
+        } else if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.audio())
         } else {
             Err(Error::DecoderNotFound)
@@ -109,8 +111,14 @@ impl Decoder {
         }
     }
 
-    pub fn time_base(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).time_base) }
+    pub fn packet_time_base(&self) -> Rational {
+        unsafe { Rational::from((*self.as_ptr()).pkt_timebase) }
+    }
+
+    pub fn set_packet_time_base<R: Into<Rational>>(&mut self, value: R) {
+        unsafe {
+            (*self.as_mut_ptr()).pkt_timebase = value.into().into();
+        }
     }
 }
 
