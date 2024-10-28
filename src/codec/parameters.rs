@@ -43,6 +43,14 @@ impl Parameters {
     pub fn id(&self) -> Id {
         unsafe { Id::from((*self.as_ptr()).codec_id) }
     }
+
+    pub fn width(&self) -> Option<i32> {
+        (self.medium() == media::Type::Video).then(|| unsafe { (*self.as_ptr()).width })
+    }
+
+    pub fn height(&self) -> Option<i32> {
+        (self.medium() == media::Type::Video).then(|| unsafe { (*self.as_ptr()).height })
+    }
 }
 
 impl Default for Parameters {
